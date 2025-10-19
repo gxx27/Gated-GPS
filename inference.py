@@ -10,7 +10,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model_path = "ckpt"
+model_path = "ckpt/"
 
 
 def parse_args():
@@ -188,7 +188,8 @@ if __name__ == "__main__":
         pe_dim=args.pe_dim,
         dataset_name="Test60",
         train=False,
-        esm_name=args.esm_name
+        esm_name=args.esm_name,
+        feature_path="datasets/feature/feature_test_60/"
     )
     
     print("Creating Test set Test315 ...")
@@ -196,7 +197,8 @@ if __name__ == "__main__":
         pe_dim=args.pe_dim,
         dataset_name="Test315",
         train=False,
-        esm_name=args.esm_name
+        esm_name=args.esm_name,
+        feature_path="datasets/feature/feature_test_315/"
     )
 
     print("Creating Test set UBtest31...")
@@ -204,7 +206,8 @@ if __name__ == "__main__":
         pe_dim=args.pe_dim,
         dataset_name="UBtest31",
         train=False,
-        esm_name=args.esm_name
+        esm_name=args.esm_name,
+        feature_path="datasets/feature/feature_ubtest_31/"
     )
 
     print("Creating Test set Btest31...")
@@ -212,7 +215,8 @@ if __name__ == "__main__":
         pe_dim=args.pe_dim,
         dataset_name="Btest31",
         train=False,
-        esm_name=args.esm_name
+        esm_name=args.esm_name,
+        feature_path="datasets/feature/feature_test_60/"
     )
 
     print("len of test60: ", len(test_set60))
