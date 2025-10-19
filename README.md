@@ -43,7 +43,11 @@ Gated-GPS/
 ├── ckpt
 ├── datasets/
 │   ├── *.pkl
+|   ├── bound_unbound_mapping.txt
 │   └── feature/
+│       ├── feature_test_60/
+│       ├── feature_test_315/
+│       └── feature_ubtest_31/
 ```
 
 ### Step 2: Create Environment
