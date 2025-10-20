@@ -67,6 +67,8 @@ To perform inference using pretrained models:
 python inference.py
 ```
 
+**Note**: The pretrained checkpoint uses ESM2-650M (esm2_t33_650M) by default for protein sequence embeddings.
+
 ## Citation
 
 If you find this project helpful for your research, please consider citing the following work:

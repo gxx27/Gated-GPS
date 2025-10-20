@@ -40,7 +40,7 @@ def parse_args():
     # Others
     parser.add_argument("--save_path", type=str, default="./ckpt")
     parser.add_argument("--esm_name", type=str, default=None)
-    
+    parser.add_argument("--esm_model_path", type=str, default=None)
     args = parser.parse_args()
     return args
 
@@ -293,12 +293,43 @@ if __name__ == "__main__":
     set_seed(args.seed)
     
     os.makedirs(args.save_path, exist_ok=True)
+
+    if args.esm_name == "esm2_t6_8M":
+        args.esm_dim = 320
+        args.esm_layers = 6
+    elif args.esm_name == "esm2_t12_35M":
+        args.esm_dim = 480
+        args.esm_layers = 12
+    elif args.esm_name == "esm2_t30_150M":
+        args.esm_dim = 640
+        args.esm_layers = 30
+    elif args.esm_name == "esm2_t33_650M":
+        args.esm_dim = 1280
+        args.esm_layers = 33
+    elif args.esm_name == "esm2_t36_3B":
+        args.esm_dim = 2560
+        args.esm_layers = 36
+    elif args.esm_name == "esm2_t48_15B":
+        args.esm_dim = 5120
+        args.esm_layers = 48
+    elif args.esm_name == "esm1b_t33_650M":
+        args.esm_dim = 1280
+        args.esm_layers = 33
+    elif args.esm_name == "esm1v_t33_650M":
+        args.esm_dim = 1280
+        args.esm_layers = 33
+    else: # by default, use esm2_t33_650M
+        args.esm_dim = 1280
+        args.esm_layers = 33
     
     print("Creating Training set ...")
     start = time.time()
     train_set = ProDataset(
         pe_dim=args.pe_dim,
-        esm_name=args.esm_name
+        esm_name=args.esm_name,
+        esm_layers=args.esm_layers,
+        esm_model_path=args.esm_model_path,
+        feature_path="datasets/feature/feature_train_2771/"
     )
     end = time.time()
     print("Creating datasets costs:", end-start)
@@ -308,7 +339,10 @@ if __name__ == "__main__":
         pe_dim=args.pe_dim,
         dataset_name="Test60",
         train=False,
-        esm_name=args.esm_name
+        esm_name=args.esm_name,
+        esm_layers=args.esm_layers,
+        esm_model_path=args.esm_model_path,
+        feature_path="datasets/feature/feature_test_60/"
     )
     
     print("Creating Test set Test_315 ...")
@@ -316,7 +350,10 @@ if __name__ == "__main__":
         pe_dim=args.pe_dim,
         dataset_name="Test315",
         train=False,
-        esm_name=args.esm_name
+        esm_name=args.esm_name,
+        esm_layers=args.esm_layers,
+        esm_model_path=args.esm_model_path,
+        feature_path="datasets/feature/feature_test_315/"
     )
     
     print("Creating Test set Btest_31...")
@@ -324,7 +361,10 @@ if __name__ == "__main__":
         pe_dim=args.pe_dim,
         dataset_name="Btest31",
         train=False,
-        esm_name=args.esm_name
+        esm_name=args.esm_name,
+        esm_layers=args.esm_layers,
+        esm_model_path=args.esm_model_path,
+        feature_path="datasets/feature/feature_test_60/"
     )
 
     print("Creating Test set UBtest_31...")
@@ -332,27 +372,11 @@ if __name__ == "__main__":
         pe_dim=args.pe_dim,
         dataset_name="UBtest31",
         train=False,
-        esm_name=args.esm_name
+        esm_name=args.esm_name,
+        esm_layers=args.esm_layers,
+        esm_model_path=args.esm_model_path,
+        feature_path="datasets/feature/feature_ubtest_31/"
     )
-    
-    if args.esm_name == "esm2_t6_8M":
-        args.esm_dim = 320
-    elif args.esm_name == "esm2_t12_35M":
-        args.esm_dim = 480
-    elif args.esm_name == "esm2_t30_150M":
-        args.esm_dim = 640
-    elif args.esm_name == "esm2_t33_650M":
-        args.esm_dim = 1280
-    elif args.esm_name == "esm2_t36_3B":
-        args.esm_dim = 2560
-    elif args.esm_name == "esm2_t48_15B":
-        args.esm_dim = 5120
-    elif args.esm_name == "esm1b_t33_650M":
-        args.esm_dim = 1280
-    elif args.esm_name == "esm1v_t33_650M":
-        args.esm_dim = 1280
-    else:
-        args.esm_dim = 1280
         
     print("len of train:", len(train_set))
     print("len of test60: ", len(test_set60))

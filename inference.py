@@ -32,7 +32,7 @@ def parse_args():
     parser.add_argument("--lr", type=float, default=4e-4)
     parser.add_argument("--weight_decay", type=float, default=4e-5)
     parser.add_argument("--esm_name", type=str, default=None)
-    
+    parser.add_argument("--esm_model_path", type=str, default=None)
     args = parser.parse_args()
     return args
 
@@ -166,22 +166,31 @@ if __name__ == "__main__":
     
     if args.esm_name == "esm2_t6_8M":
         args.esm_dim = 320
+        args.esm_layers = 6
     elif args.esm_name == "esm2_t12_35M":
         args.esm_dim = 480
+        args.esm_layers = 12
     elif args.esm_name == "esm2_t30_150M":
         args.esm_dim = 640
+        args.esm_layers = 30
     elif args.esm_name == "esm2_t33_650M":
         args.esm_dim = 1280
+        args.esm_layers = 33
     elif args.esm_name == "esm2_t36_3B":
         args.esm_dim = 2560
+        args.esm_layers = 36
     elif args.esm_name == "esm2_t48_15B":
         args.esm_dim = 5120
+        args.esm_layers = 48
     elif args.esm_name == "esm1b_t33_650M":
         args.esm_dim = 1280
+        args.esm_layers = 33
     elif args.esm_name == "esm1v_t33_650M":
         args.esm_dim = 1280
-    else:
+        args.esm_layers = 33
+    else: # by default, use esm2_t33_650M
         args.esm_dim = 1280
+        args.esm_layers = 33
 
     print("Creating Test set Test60 ...")
     test_set60 = ProDataset(
@@ -189,6 +198,8 @@ if __name__ == "__main__":
         dataset_name="Test60",
         train=False,
         esm_name=args.esm_name,
+        esm_layers=args.esm_layers,
+        esm_model_path=args.esm_model_path,
         feature_path="datasets/feature/feature_test_60/"
     )
     
@@ -198,31 +209,38 @@ if __name__ == "__main__":
         dataset_name="Test315",
         train=False,
         esm_name=args.esm_name,
+        esm_layers=args.esm_layers,
+        esm_model_path=args.esm_model_path,
         feature_path="datasets/feature/feature_test_315/"
     )
 
-    print("Creating Test set UBtest31...")
-    test_b31 = ProDataset(
-        pe_dim=args.pe_dim,
-        dataset_name="UBtest31",
-        train=False,
-        esm_name=args.esm_name,
-        feature_path="datasets/feature/feature_ubtest_31/"
-    )
-
     print("Creating Test set Btest31...")
-    test_ub31 = ProDataset(
+    test_b31 = ProDataset(
         pe_dim=args.pe_dim,
         dataset_name="Btest31",
         train=False,
         esm_name=args.esm_name,
+        esm_layers=args.esm_layers,
+        esm_model_path=args.esm_model_path,
         feature_path="datasets/feature/feature_test_60/"
+    )
+
+    print("Creating Test set UBtest31...")
+    test_ub31 = ProDataset(
+        pe_dim=args.pe_dim,
+        dataset_name="UBtest31",
+        train=False,
+        esm_name=args.esm_name,
+        esm_layers=args.esm_layers,
+        esm_model_path=args.esm_model_path,
+        feature_path="datasets/feature/feature_ubtest_31/"
     )
 
     print("len of test60: ", len(test_set60))
     print("len of test315: ", len(test_set315))
-    print("len of ubtest31: ", len(test_b31))
-    print("len of btest31: ", len(test_ub31))
+    print("len of btest31: ", len(test_b31))
+    print("len of ubtest31: ", len(test_ub31))
+    
     
     print("Evaluating on Test60 ...")
     test_loader = DataLoader(test_set60, batch_size=1, shuffle=False, num_workers=0, drop_last=False)

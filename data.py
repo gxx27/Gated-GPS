@@ -29,24 +29,19 @@ class ProDataset(Dataset):
             feature_path="datasets/feature/",
             train=True,
             esm_name=None,
+            esm_layers=None,
+            esm_model_path=None,
         ):
         self.transform = T.AddRandomWalkPE(walk_length=pe_dim, attr_name="pe")
         
         self.radius = radius
         self.dist = dist
         self.feature_path = feature_path
-        
-        file_map = {
-            "Train334": "Train334_graph_list_esm.pkl",
-            "Train2771": "Train2771_graph_list_esm.pkl",
-            "PDBBind2437": "PDBBind_2437_graph_list_esm.pkl",
-            "Test60": "Test60_graph_list_esm.pkl",
-            "Test315": "Test315_graph_list_esm.pkl",
-            "UBtest31": "UBtest31_graph_list_esm.pkl",
-            "Btest31": "Btest31_graph_list_esm.pkl"
-        }
+        self.esm_name = esm_name
+        self.esm_layers = esm_layers
+        self.esm_model_path = esm_model_path
 
-        file_name = file_map[dataset_name]
+        file_name = f"{dataset_name}_graph_list_esm.pkl"
         if esm_name:
             file_name = file_name.replace("esm.pkl", esm_name + ".pkl")
         if not os.path.exists(file_name):
@@ -93,7 +88,28 @@ class ProDataset(Dataset):
                     data[bound_ID] = test60[bound_ID]
         
         # esm model
-        model, alphabet = esm.pretrained.esm2_t33_650M_UR50D()
+        if self.esm_model_path and os.path.exists(self.esm_model_path):
+            model, alphabet = esm.pretrained.load_model_and_alphabet_local(self.esm_model_path)
+        else:
+            if self.esm_name == "esm2_t6_8M":
+                model, alphabet = esm.pretrained.esm2_t6_8M_UR50D()
+            elif self.esm_name == "esm2_t12_35M":
+                model, alphabet = esm.pretrained.esm2_t12_35M_UR50D()
+            elif self.esm_name == "esm2_t30_150M":
+                model, alphabet = esm.pretrained.esm2_t30_150M_UR50D()
+            elif self.esm_name == "esm2_t33_650M":
+                model, alphabet = esm.pretrained.esm2_t33_650M_UR50D()
+            elif self.esm_name == "esm2_t36_3B":
+                model, alphabet = esm.pretrained.esm2_t36_3B_UR50D()
+            elif self.esm_name == "esm2_t48_15B":
+                model, alphabet = esm.pretrained.esm2_t48_15B_UR50D()
+            elif self.esm_name == "esm1b_t33_650M":
+                model, alphabet = esm.pretrained.esm1b_t33_650M_UR50S()
+            elif self.esm_name == "esm1v_t33_650M":
+                model, alphabet = esm.pretrained.esm1v_t33_650M_UR90S_[1 - 5]()
+            else: # by default, use esm2_t33_650M
+                model, alphabet = esm.pretrained.esm2_t33_650M_UR50D()
+
         batch_converter = alphabet.get_batch_converter()
         model.to(device)
         model.eval()
@@ -133,8 +149,8 @@ class ProDataset(Dataset):
             batch_tokens = batch_tokens.to(device)
 
             with torch.no_grad():
-                results = model(batch_tokens, repr_layers=[33], return_contacts=True)
-            token_representations = results["representations"][33]
+                results = model(batch_tokens, repr_layers=[self.esm_layers], return_contacts=True)
+            token_representations = results["representations"][self.esm_layers]
             tk_len = token_representations.shape[1]
             esm_emb = token_representations[:,1:tk_len-1,:]
             esm_emb = esm_emb.squeeze().detach().to('cpu')
