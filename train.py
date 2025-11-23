@@ -331,6 +331,15 @@ if __name__ == "__main__":
         esm_model_path=args.esm_model_path,
         feature_path="datasets/feature/feature_train_2771/"
     )
+
+    # Training set: Train_334
+    # train_set = ProDataset(
+    #     pe_dim=args.pe_dim,
+    #     esm_name=args.esm_name,
+    #     esm_layers=args.esm_layers,
+    #     esm_model_path=args.esm_model_path,
+    #     feature_path="datasets/feature/feature_train_334/"
+    # )
     end = time.time()
     print("Creating datasets costs:", end-start)
     

@@ -65,8 +65,12 @@ class ProDataset(Dataset):
     
     def prepare_data(self, data_path, dataset_name, feature_path, train):
         if train: # Training set
-            with open(data_path + "Train_2771.pkl", "rb") as f:
-                data = pickle.load(f)
+            if dataset_name == "Train2771":
+                with open(data_path + "Train_2771.pkl", "rb") as f:
+                    data = pickle.load(f)
+            elif dataset_name == "Train334":
+                with open(data_path + "Train_334.pkl", "rb") as f:
+                    data = pickle.load(f)
         else: # Test set
             if dataset_name == "Test60":
                 with open(data_path + "Test_60.pkl", "rb") as f:

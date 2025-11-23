@@ -59,7 +59,41 @@ cd Gated-GPS
 ./create_env.sh
 ````
 
-## Inference
+### Step 2.5: Training Set Configuration
+
+**Important Note about Training Data:**
+
+The full training set (Train_2771) includes data points from PDBbind, which is a database of protein-ligand binding affinity data. Due to licensing restrictions, we cannot redistribute this data publicly. Therefore, we only provide the small-scale training set (Train_334) for demonstration purposes.
+
+If you wish to use the provided small-scale dataset instead of the full training set:
+
+1. Open `train.py`
+2. Comment out the current training set creation (lines 327-333)
+3. Uncomment the alternative training set creation (lines 336-342)
+
+The code should look like this after modification:
+
+```python
+# Comment out the full training set
+# train_set = ProDataset(
+#     pe_dim=args.pe_dim,
+#     esm_name=args.esm_name,
+#     esm_layers=args.esm_layers,
+#     esm_model_path=args.esm_model_path,
+#     feature_path="datasets/feature/feature_train_2771/"
+# )
+
+# Uncomment the small-scale training set
+train_set = ProDataset(
+    pe_dim=args.pe_dim,
+    esm_name=args.esm_name,
+    esm_layers=args.esm_layers,
+    esm_model_path=args.esm_model_path,
+    feature_path="datasets/feature/feature_train_334/"
+)
+```
+
+### Step 3: Inference
 
 To perform inference using pretrained models:
 
